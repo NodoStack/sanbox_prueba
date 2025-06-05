@@ -1,12 +1,16 @@
 from pathlib import Path
 from datetime import timedelta
+from django.core.wsgi import get_wsgi_application
 import os
 
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'ricco.settings')
+application = get_wsgi_application()
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 
 SECRET_KEY = 'django-insecure--$1@3$_!5!^g#-o#wt#2mh91%mm0e8a5#-4)oyja*jh&6$*^4+'
+
 
 
 DEBUG = False
