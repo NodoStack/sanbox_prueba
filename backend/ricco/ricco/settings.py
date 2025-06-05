@@ -1,16 +1,17 @@
 from pathlib import Path
 from datetime import timedelta
-from django.core.wsgi import get_wsgi_application
+# from django.core.wsgi import get_wsgi_application
 import os
+import pymysql
+pymysql.install_as_MySQLdb()
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'ricco.settings')
-application = get_wsgi_application()
+
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 
-SECRET_KEY = 'django-insecure--$1@3$_!5!^g#-o#wt#2mh91%mm0e8a5#-4)oyja*jh&6$*^4+'
-
+# SECRET_KEY = 'django-insecure--$1@3$_!5!^g#-o#wt#2mh91%mm0e8a5#-4)oyja*jh&6$*^4+'
+SECRET_KEY = os.getenv('SECRET_KEY', 'insecure-dev-key')
 
 
 DEBUG = False
@@ -42,13 +43,14 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
     'corsheaders.middleware.CorsMiddleware',
 ]
 
@@ -87,14 +89,16 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 #     }
 # }
 
+
+
 DATABASES = {
     'default': {
-        'ENGINE': 'mysql.connector.django',
+        'ENGINE': 'django.db.backends.mysql',
         'NAME': os.getenv('MYSQLDATABASE'),
         'USER': os.getenv('MYSQLUSER'),
         'PASSWORD': os.getenv('MYSQLPASSWORD'),
         'HOST': os.getenv('MYSQLHOST'),
-        'PORT': os.getenv('MYSQLPORT'),
+        'PORT': os.getenv('MYSQLPORT', '3306'),
     }
 }
 
@@ -153,11 +157,11 @@ SIMPLE_JWT = {
 }
 
 # Configuración de CORS
-CORS_ORIGIN_WHITELIST = [
-    "http://localhost:4200",  # Frontend web
-    "http://10.0.2.2:8000",  # Emulador Android
-    "http://192.168.X.X:8000",  # IP local si pruebas con un celular físico
-]
+# CORS_ORIGIN_WHITELIST = [
+#     "http://localhost:4200",  # Frontend web
+#     "http://10.0.2.2:8000",  # Emulador Android
+#     "http://192.168.X.X:8000",  # IP local si pruebas con un celular físico
+# ]
 CORS_ALLOW_ALL_ORIGINS= True
 CORS_ALLOW_CREDENTIALS = True
 
@@ -187,3 +191,4 @@ MEDIA_ROOT = BASE_DIR / 'media'
 MERCADOPAGO_ACCESS_TOKEN = os.getenv("MERCADOPAGO_ACCESS_TOKEN", "TEST-902554988203207-050217-2c7bab6c62f22c3d4f51093bf311b466-146277237")
 
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
