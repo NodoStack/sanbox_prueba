@@ -3,8 +3,7 @@ from datetime import timedelta
 # from django.core.wsgi import get_wsgi_application
 import dj_database_url
 import os
-# import pymysql
-# pymysql.install_as_MySQLdb()
+
 
 
 
@@ -74,32 +73,7 @@ TEMPLATES = [
 WSGI_APPLICATION = 'ricco.wsgi.application'
 
 BASE_DIR = Path(__file__).resolve().parent.parent
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.mysql',
-#         'NAME': 'abm_ispc',
-#         'USER': 'root',
-#         'PASSWORD': '1234',
-#         'HOST': 'localhost',
-#         'PORT': '3306',
-#         'OPTIONS': {
-#             'sql_mode': 'traditional',
-#         }
-#     }
-# }
 
-
-
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.mysql',
-#         'NAME': os.getenv('MYSQLDATABASE'),
-#         'USER': os.getenv('MYSQLUSER'),
-#         'PASSWORD': os.getenv('MYSQLPASSWORD'),
-#         'HOST': os.getenv('MYSQLHOST'),
-#         'PORT': os.getenv('MYSQLPORT', '3306'),
-#     }
-# }
 
 DATABASES = {
     'default': dj_database_url.config(
