@@ -1,9 +1,10 @@
 from pathlib import Path
 from datetime import timedelta
 # from django.core.wsgi import get_wsgi_application
+import dj_database_url
 import os
-import pymysql
-pymysql.install_as_MySQLdb()
+# import pymysql
+# pymysql.install_as_MySQLdb()
 
 
 
@@ -91,17 +92,23 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': os.getenv('MYSQLDATABASE'),
-        'USER': os.getenv('MYSQLUSER'),
-        'PASSWORD': os.getenv('MYSQLPASSWORD'),
-        'HOST': os.getenv('MYSQLHOST'),
-        'PORT': os.getenv('MYSQLPORT', '3306'),
-    }
-}
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.mysql',
+#         'NAME': os.getenv('MYSQLDATABASE'),
+#         'USER': os.getenv('MYSQLUSER'),
+#         'PASSWORD': os.getenv('MYSQLPASSWORD'),
+#         'HOST': os.getenv('MYSQLHOST'),
+#         'PORT': os.getenv('MYSQLPORT', '3306'),
+#     }
+# }
 
+DATABASES = {
+    'default': dj_database_url.config(
+        default=os.getenv('DATABASE_URL'),
+        conn_max_age=600
+    )
+}
 AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
