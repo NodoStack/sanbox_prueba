@@ -16,11 +16,7 @@ SECRET_KEY = os.getenv('SECRET_KEY', 'insecure-dev-key')
 
 DEBUG = False
 
-# ALLOWED_HOSTS = ['127.0.0.1', 
-#                  'localhost',
-#                  '10.0.2.2' 
-#                  ]
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ['ricco-backend.onrender.com']
 
 CORS_ALLOW_ALL_ORIGINS = True
 
