@@ -18,8 +18,15 @@ DEBUG = False
 
 ALLOWED_HOSTS = ['ricco-backend.onrender.com']
 
-CORS_ALLOW_ALL_ORIGINS = True
+# Para entorno de desarrollo y producción
+DEBUG = os.getenv('DEBUG', 'True') == 'True'
 
+if DEBUG:
+    CORS_ALLOW_ALL_ORIGINS = True
+else:
+    CORS_ALLOWED_ORIGINS = [
+    'https://ricco-frontend.onrender.com',
+]
 
 # Application definition
 INSTALLED_APPS = [
