@@ -2,6 +2,7 @@
 """Django's command-line utility for administrative tasks."""
 import os
 import sys
+from django.core.management import call_command
 from dotenv import load_dotenv
 load_dotenv()
 
@@ -21,3 +22,6 @@ def main():
 
 if __name__ == '__main__':
     main()
+
+# Luego de setear DJANGO_SETTINGS_MODULE, dentro de `main()`:
+call_command('migrate')  # Esto aplicará las migraciones
