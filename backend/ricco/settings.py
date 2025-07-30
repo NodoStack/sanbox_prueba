@@ -1,32 +1,24 @@
 from pathlib import Path
 from datetime import timedelta
-# from django.core.wsgi import get_wsgi_application
 import dj_database_url
 import os
-
-
-
-
-BASE_DIR = Path(__file__).resolve().parent.parent
 
 
 # SECRET_KEY = 'django-insecure--$1@3$_!5!^g#-o#wt#2mh91%mm0e8a5#-4)oyja*jh&6$*^4+'
 SECRET_KEY = os.getenv('SECRET_KEY', 'insecure-dev-key')
 
 
-DEBUG = False
-
 ALLOWED_HOSTS = ['ricco-backend.onrender.com']
 
 # Para entorno de desarrollo y producción
-DEBUG = os.getenv('DEBUG', 'True') == 'True'
+DEBUG = os.getenv('DEBUG', 'False') == 'True'
 
 if DEBUG:
+    ALLOWED_HOSTS += ['localhost', '127.0.0.1']
     CORS_ALLOW_ALL_ORIGINS = True
 else:
-    CORS_ALLOWED_ORIGINS = [
-    'https://ricco-frontend.onrender.com',
-]
+    CORS_ALLOW_ALL_ORIGINS = False
+    CORS_ALLOWED_ORIGINS = ['https://ricco-frontend.onrender.com']# Sólo tu frontend real en prod
 
 # Application definition
 INSTALLED_APPS = [
@@ -78,12 +70,28 @@ WSGI_APPLICATION = 'ricco.wsgi.application'
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 
-DATABASES = {
-    'default': dj_database_url.config(
-        default=os.getenv('DATABASE_URL'),
-        conn_max_age=600
-    )
-}
+if DEBUG:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.mysql',
+            'NAME': 'abm_ispc',
+            'USER': 'root',
+            'PASSWORD': '12345',
+            'HOST': 'localhost',  # o la IP si no está local
+            'PORT': '3306',
+            'OPTIONS': {
+            'sql_mode': 'traditional',
+        }
+        }
+    }
+else:
+    # Producción: usa DATABASE_URL con dj_database_url
+    DATABASES = {
+        'default': dj_database_url.config(
+            default=os.getenv('DATABASE_URL'),
+            conn_max_age=600
+        )
+    }
 AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
@@ -138,13 +146,6 @@ SIMPLE_JWT = {
     'AUTH_HEADER_TYPES': ('Bearer',),
 }
 
-# Configuración de CORS
-# CORS_ORIGIN_WHITELIST = [
-#     "http://localhost:4200",  # Frontend web
-#     "http://10.0.2.2:8000",  # Emulador Android
-#     "http://192.168.X.X:8000",  # IP local si pruebas con un celular físico
-# ]
-CORS_ALLOW_ALL_ORIGINS= True
 CORS_ALLOW_CREDENTIALS = True
 
 CORS_ALLOW_HEADERS = [
@@ -168,9 +169,10 @@ AUTHENTICATION_BACKENDS = [
     'django.contrib.auth.backends.ModelBackend',
 ]
 
-MEDIA_URL = '/media/'
-MEDIA_ROOT = BASE_DIR / 'media' 
+# MEDIA_URL = '/media/'
+# MEDIA_ROOT = BASE_DIR / 'media' 
 MERCADOPAGO_ACCESS_TOKEN = os.getenv("MERCADOPAGO_ACCESS_TOKEN", "TEST-902554988203207-050217-2c7bab6c62f22c3d4f51093bf311b466-146277237")
 
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
+STATICFILES_DIRS = [BASE_DIR / "static"]

@@ -8,7 +8,7 @@ from .models import CustomUser, Rol, Producto, Direccion,Compra,Detalle,Permiso,
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
-from django.conf import settings
+
 
 
 class UsuarioSerializers(serializers.ModelSerializer):
@@ -39,18 +39,6 @@ class PerfilUsuarioSerializer(serializers.ModelSerializer):
 
         instance.save()
         return instance
-    
-# class LocalidadSerializer(serializers.ModelSerializer):
-#     class Meta:
-#         model = Localidad
-#         fields = '__all__'
-
-# class BarrioSerializer(serializers.ModelSerializer):
-#     localidad = LocalidadSerializer(required=True)
-
-#     class Meta:
-#         model = Barrio
-#         fields = ('nombre_barrio')
 
 class DireccionSerializer(serializers.ModelSerializer):
 
@@ -129,10 +117,10 @@ class CompraSerializer(serializers.ModelSerializer):
     
     def create(self, validated_data):
         # Crea la compra
-        compra = Compra.objects.create(**validated_data)
+        compra = Compra.objects.create(**validated_data) # pylint: disable=no-member
 
         # Busca los detalles asociados (ya deberían haber sido creados)
-        detalles = Detalle.objects.filter(compra=compra).select_related('producto')
+        detalles = Detalle.objects.filter(compra=compra).select_related('producto') # pylint: disable=no-member
 
         # Construir descripción
         descripcion = []
@@ -147,7 +135,7 @@ class MisComprasView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
-        compras = Compra.objects.filter(user=request.user)
+        compras = Compra.objects.filter(user=request.user) # pylint: disable=no-member
         serializer = CompraSerializer(compras, many=True)
         return Response(serializer.data) 
 

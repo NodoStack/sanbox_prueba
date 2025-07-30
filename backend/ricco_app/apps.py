@@ -17,12 +17,13 @@ class RiccoAppConfig(AppConfig):
             print("✅ Migraciones aplicadas")
 
             User = get_user_model()
-            if not User.objects.filter(username='admin').exists():
+            if not User.objects.filter(email='admin@example.com').exists():
                 print('🛠️ Creando superusuario...')
                 User.objects.create_superuser(
                     username='admin',
                     email='admin@example.com',
-                    password='adminpassword123'
+                    password='adminpassword123',
+                    telefono='0000000000'
                 )
             else:
                 print('✅ Superusuario ya existe.')

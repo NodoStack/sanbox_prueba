@@ -15,21 +15,12 @@ from rest_framework.permissions import IsAdminUser
 from django.http import JsonResponse
 import json
 import mercadopago
-
 from datetime import datetime
-
 from .serializers import UsuarioSerializers,RegistroSerializers, RolSerializer, ProductoSerializer, DireccionSerializer, CompraSerializer,DetalleSerializer, PedidoSerializer,PermisoSerializer, Rol_PermisoSerializer, PerfilUsuarioSerializer
-
 from .models import Rol, Producto,Direccion, Compra,Detalle,Pedido,Permiso, Rol_Permiso
-
 from django.conf import settings
-
-from datetime import datetime
-from django.utils.timezone import now
 from django.utils import timezone
 import logging
-from rest_framework import status
-
 
 sdk = mercadopago.SDK(settings.MERCADOPAGO_ACCESS_TOKEN)
 
@@ -65,7 +56,7 @@ class CancelarPedidoView(APIView):
     def post(self, request, id_compra):
         print(f"Recibiendo solicitud para cancelar la compra con id: {id_compra}")
         try:
-            compra = Compra.objects.get(id_compra=id_compra, user=request.user)
+            compra = Compra.objects.get(id_compra=id_compra, user=request.user)  # pylint: disable=no-member
             print(f"Compra encontrada: {compra}")
 
             # Verifica si ya fue cancelada
@@ -90,7 +81,7 @@ class CancelarPedidoView(APIView):
 
             return Response({'mensaje': 'Compra cancelada exitosamente.'}, status=status.HTTP_200_OK)
 
-        except Compra.DoesNotExist:
+        except Compra.DoesNotExist: # pylint: disable=no-member
             logger.error(f"Compra no encontrada o no pertenece al usuario. ID: {id_compra}")
             print(f"Compra no encontrada o no pertenece al usuario. ID: {id_compra}")
             return Response({'error': 'Compra no encontrada o no pertenece al usuario.'}, status=status.HTTP_404_NOT_FOUND)
@@ -161,7 +152,7 @@ class RegistroView(generics.CreateAPIView):
 
         if serializer.is_valid():
             user = serializer.save()
-            token, _ = Token.objects.get_or_create(user=user)
+            token, _ = Token.objects.get_or_create(user=user)  # pylint: disable=no-member
             return Response({'token': token.key, 'user': serializer.data}, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     @csrf_exempt
@@ -175,21 +166,13 @@ class PerfilUsuarioView(generics.RetrieveUpdateDestroyAPIView):
 
     def get_object(self):
         return self.request.user
-             
-# class LocalidadViewSet(viewsets.ModelViewSet):
-#     queryset=Localidad.objects.all()
-#     serializer_class= LocalidadSerializer
- 
-# class BarrioViewSet(viewsets.ModelViewSet):
-#     queryset=Barrio.objects.all()
-#     serializer_class= BarrioSerializer
- 
+
 class RolViewSet(viewsets.ModelViewSet):
-    queryset=Rol.objects.all()
+    queryset=Rol.objects.all()  # pylint: disable=no-member
     serializer_class= RolSerializer
  
 class ProductoViewSet(viewsets.ModelViewSet):
-    queryset = Producto.objects.all()  
+    queryset = Producto.objects.all()  # pylint: disable=no-member
     serializer_class = ProductoSerializer
     permission_classes = [AllowAny]
     lookup_field = 'id_producto'  
@@ -199,20 +182,20 @@ class ProductoViewSet(viewsets.ModelViewSet):
         print(f"Usuario autenticado en productos: {user} - Is staff: {getattr(user, 'is_staff', False)}")
         if user.is_authenticated and user.is_staff:
             
-            return Producto.objects.all()
+            return Producto.objects.all() # pylint: disable=no-member
         else:
             
-            return Producto.objects.filter(visible=True)
+            return Producto.objects.filter(visible=True) # pylint: disable=no-member
 
     def get_serializer_context(self):
         return {'request': self.request}  
  
 class DireccionViewSet(viewsets.ModelViewSet):
-    queryset=Direccion.objects.all()
+    queryset=Direccion.objects.all() # pylint: disable=no-member
     serializer_class= DireccionSerializer
 
 class CompraViewSet(viewsets.ModelViewSet):
-    queryset = Compra.objects.all()
+    queryset = Compra.objects.all() # pylint: disable=no-member
     serializer_class = CompraSerializer   
     permission_classes = [IsAuthenticated]
 
@@ -220,8 +203,8 @@ class CompraViewSet(viewsets.ModelViewSet):
         serializer.save(user=self.request.user)
 
     def get_queryset(self):
-        compras = Compra.objects.select_related('user').all()
-        for compra in compras:
+        compras = Compra.objects.select_related('user').all() # pylint: disable=no-member
+        for compra in compras: 
             print(f'Compra ID: {compra.id}, Usuario: {compra.user.first_name} {compra.user.last_name}')
         return compras
 
@@ -230,7 +213,7 @@ class MisComprasView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
-        compras = Compra.objects.filter(user=request.user)
+        compras = Compra.objects.filter(user=request.user) # pylint: disable=no-member
 
         for compra in compras:
             # Si el estado es pendiente y ya venció el tiempo de cancelación
@@ -269,7 +252,7 @@ class TodasComprasView(APIView):
                 status=403
             )
 
-        compras = Compra.objects.all()
+        compras = Compra.objects.all() # pylint: disable=no-member
         print("Compras obtenidas en el backend:")
         for compra in compras:
             print(f"Compra ID: {compra.id_compra}, Usuario: {compra.user.email}, Total: {compra.precio_total}")  
@@ -299,21 +282,21 @@ class TodasComprasView(APIView):
 
     
 class DetalleViewSet(viewsets.ModelViewSet):
-    queryset=Detalle.objects.all()
+    queryset=Detalle.objects.all() # pylint: disable=no-member
     serializer_class= DetalleSerializer  
     
  
 class PermisoViewSet(viewsets.ModelViewSet):
-    queryset=Permiso.objects.all()
+    queryset=Permiso.objects.all() # pylint: disable=no-member
     serializer_class= PermisoSerializer                
     
 class Rol_PermisoViewSet(viewsets.ModelViewSet):
-    queryset=Rol_Permiso.objects.all()
+    queryset=Rol_Permiso.objects.all() # pylint: disable=no-member
     serializer_class= Rol_PermisoSerializer        
        
 class PedidoViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
-    queryset = Pedido.objects.all()
+    queryset = Pedido.objects.all() # pylint: disable=no-member
     serializer_class = PedidoSerializer 
 
     def create(self, request, *args, **kwargs):
@@ -347,7 +330,7 @@ def crear_pagos_view(request):
             items = []
             descripcion_items = []
             
-            compra = Compra.objects.create(
+            compra = Compra.objects.create(    # pylint: disable=no-member
                 descripcion="", #se actualizará luego
                 user=user,
                 fecha=datetime.now(),
@@ -355,19 +338,19 @@ def crear_pagos_view(request):
             )
 
             for detalle_data in data["detalles"]:
-                producto = Producto.objects.get(id_producto=detalle_data["id_producto"])
+                producto = Producto.objects.get(id_producto=detalle_data["id_producto"]) # pylint: disable=no-member
                 cantidad = int(detalle_data["cantidad"])
                 precio_unitario = float(producto.precio)
                 precio_calculado = cantidad * precio_unitario
                 total += precio_calculado
 
               
-                Detalle.objects.create(
+                Detalle.objects.create(      # pylint: disable=no-member
                     cantidad=cantidad,
                     precio_calculado=precio_calculado,
                     producto=producto,
                     compra=compra
-                )
+                )    
                 
                 descripcion_items.append(f"{cantidad} {producto.nombre_producto}")
 
@@ -417,7 +400,7 @@ class ActualizarComprasView(APIView):
         ahora = timezone.now()
         compras_actualizadas = []
 
-        compras = Compra.objects.filter(estado='pendiente', cancelable_hasta__lt=ahora)
+        compras = Compra.objects.filter(estado='pendiente', cancelable_hasta__lt=ahora)  # pylint: disable=no-member
         for compra in compras:
             compra.estado = 'preparacion'
             compra.save()
