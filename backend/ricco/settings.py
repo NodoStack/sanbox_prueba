@@ -18,7 +18,7 @@ print("CORS_ALLOW_ALL_ORIGINS:", CORS_ALLOW_ALL_ORIGINS)
 
 if not CORS_ALLOW_ALL_ORIGINS:
     CORS_ALLOWED_ORIGINS = [
-        'https://ricco-frontend.onrender.com',
+        'https://ricco-web-frontend.onrender.com',
     ]
     
 # Application definition
