@@ -13,13 +13,13 @@ ALLOWED_HOSTS = ['ricco-backend.onrender.com']
 # Para entorno de desarrollo y producción
 DEBUG = os.getenv('DEBUG', 'False') == 'True'
 
-if DEBUG:
-    ALLOWED_HOSTS += ['localhost', '127.0.0.1']
-    CORS_ALLOW_ALL_ORIGINS = True
-else:
-    CORS_ALLOW_ALL_ORIGINS = False
-    CORS_ALLOWED_ORIGINS = ['https://ricco-frontend.onrender.com']# Sólo tu frontend real en prod
+CORS_ALLOW_ALL_ORIGINS = os.getenv('CORS_ALLOW_ALL_ORIGINS', 'False') == 'True'
 
+if not CORS_ALLOW_ALL_ORIGINS:
+    CORS_ALLOWED_ORIGINS = [
+        'https://ricco-frontend.onrender.com',
+    ]
+    
 # Application definition
 INSTALLED_APPS = [
     'django.contrib.admin',
