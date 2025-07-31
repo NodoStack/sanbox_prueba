@@ -3,8 +3,7 @@ from rest_framework import routers
 from .views import LoginView, LogoutView, RegistroView
 from ricco_app import views
 from .views import MisComprasView, TodasComprasView, AdminView, PerfilUsuarioView, crear_pagos_view, CancelarPedidoView
-from django.conf.urls.static import static
-from django.conf import settings
+
 
 router= routers.DefaultRouter()
 router.register(r'rol',views.RolViewSet)
