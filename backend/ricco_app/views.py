@@ -357,92 +357,92 @@ class AdminView(APIView):
         print(f"GET llamado por: {request.user}")
         return Response({"message": "Bienvenido al panel de administración"}, status=status.HTTP_200_OK)    
     
-@csrf_exempt
-def crear_pagos_view(request):
-    if request.method == "POST":
-        try:
-            data = json.loads(request.body)
-            user = User.objects.get(id=data["user"])
+# @csrf_exempt
+# def crear_pagos_view(request):
+#     if request.method == "POST":
+#         try:
+#             data = json.loads(request.body)
+#             user = User.objects.get(id=data["user"])
             
-            total = 0
-            items = []
-            descripcion_items = []
+#             total = 0
+#             items = []
+#             descripcion_items = []
 
-            # Verificación de stock antes de crear la compra
-            for detalle_data in data["detalles"]:
-                producto = Producto.objects.get(id_producto=detalle_data["id_producto"]) # pylint: disable=no-member   
-                cantidad = int(detalle_data["cantidad"])
+#             # Verificación de stock antes de crear la compra
+#             for detalle_data in data["detalles"]:
+#                 producto = Producto.objects.get(id_producto=detalle_data["id_producto"]) # pylint: disable=no-member   
+#                 cantidad = int(detalle_data["cantidad"])
 
-                if producto.stock == 0:
-                    return JsonResponse({"error": f"{producto.nombre_producto} está agotado"}, status=400)
+#                 if producto.stock == 0:
+#                     return JsonResponse({"error": f"{producto.nombre_producto} está agotado"}, status=400)
 
-                if producto.stock < cantidad:
-                    return JsonResponse({"error": f"Solo hay {producto.stock} unidades disponibles de {producto.nombre_producto}"}, status=400)
+#                 if producto.stock < cantidad:
+#                     return JsonResponse({"error": f"Solo hay {producto.stock} unidades disponibles de {producto.nombre_producto}"}, status=400)
 
-            # Crear la compra
-            compra = Compra.objects.create( # pylint: disable=no-member   
-                descripcion="",
-                user=user,
-                fecha=datetime.now(),
-                precio_total=0.0  
-            )
+#             # Crear la compra
+#             compra = Compra.objects.create( # pylint: disable=no-member   
+#                 descripcion="",
+#                 user=user,
+#                 fecha=datetime.now(),
+#                 precio_total=0.0  
+#             )
 
-            # Crear detalles y actualizar stock
-            for detalle_data in data["detalles"]:
-                producto = Producto.objects.get(id_producto=detalle_data["id_producto"]) # pylint: disable=no-member   
-                cantidad = int(detalle_data["cantidad"])
-                precio_unitario = float(producto.precio)
-                precio_calculado = cantidad * precio_unitario
-                total += precio_calculado
+#             # Crear detalles y actualizar stock
+#             for detalle_data in data["detalles"]:
+#                 producto = Producto.objects.get(id_producto=detalle_data["id_producto"]) # pylint: disable=no-member   
+#                 cantidad = int(detalle_data["cantidad"])
+#                 precio_unitario = float(producto.precio)
+#                 precio_calculado = cantidad * precio_unitario
+#                 total += precio_calculado
 
-                Detalle.objects.create( # pylint: disable=no-member   
-                    cantidad=cantidad,
-                    precio_calculado=precio_calculado,
-                    producto=producto,
-                    compra=compra
-                )
+#                 Detalle.objects.create( # pylint: disable=no-member   
+#                     cantidad=cantidad,
+#                     precio_calculado=precio_calculado,
+#                     producto=producto,
+#                     compra=compra
+#                 )
 
-                producto.stock -= cantidad
-                producto.save()
+#                 producto.stock -= cantidad
+#                 producto.save()
 
-                descripcion_items.append(f"{cantidad} {producto.nombre_producto}")
+#                 descripcion_items.append(f"{cantidad} {producto.nombre_producto}")
 
-                items.append({
-                    "title": producto.nombre_producto,
-                    "quantity": cantidad,
-                    "unit_price": precio_unitario,
-                    "currency_id": "ARS",
-                })
+#                 items.append({
+#                     "title": producto.nombre_producto,
+#                     "quantity": cantidad,
+#                     "unit_price": precio_unitario,
+#                     "currency_id": "ARS",
+#                 })
 
-            compra.precio_total = total
-            compra.descripcion = ", ".join(descripcion_items)
-            compra.save()
+#             compra.precio_total = total
+#             compra.descripcion = ", ".join(descripcion_items)
+#             compra.save()
 
-            preference_data = {
-                "items": items,
-                "back_urls": {
-                    "success": "https://google.com",
-                    "failure": "https://google.com",
-                    "pending": "https://google.com",
-                },
-                "auto_return": "approved",
-                "metadata": {
-                    "compra_id": compra.id_compra
-                }
-            }
+#             preference_data = {
+#                 "items": items,
+#                 "back_urls": {
+#                     "success": "https://google.com",
+#                     "failure": "https://google.com",
+#                     "pending": "https://google.com",
+#                 },
+#                 "auto_return": "approved",
+#                 "metadata": {
+#                     "compra_id": compra.id_compra
+#                 }
+#             }
 
-            preference_response = sdk.preference().create(preference_data)
-            if preference_response["status"] != 201:
-                print("Error de Mercado Pago:", preference_response["response"])
-                return JsonResponse({"error": "Error al generar preferencia de pago", "detalle": preference_response["response"]}, status=500)
+#             preference_response = sdk.preference().create(preference_data)
+#             if preference_response["status"] != 201:
+#                 print("Error de Mercado Pago:", preference_response["response"])
+#                 return JsonResponse({"error": "Error al generar preferencia de pago", "detalle": preference_response["response"]}, status=500)
 
-            return JsonResponse({"init_point": preference_response["response"]["init_point"]}, status=201)
+#             return JsonResponse({"init_point": preference_response["response"]["init_point"]}, status=201)
 
-        except Exception as e:
-            print("Error:", e)
-            return JsonResponse({"error": str(e)}, status=500)
+#         except Exception as e:
+#             print("Error:", e)
+#             return JsonResponse({"error": str(e)}, status=500)
 
-    return JsonResponse({"error": "Método no permitido"}, status=405)
+#     return JsonResponse({"error": "Método no permitido"}, status=405)
 
 class ActualizarComprasView(APIView):
     permission_classes = [IsAuthenticated]
@@ -472,4 +472,123 @@ def desactivar_cuenta(request):
     return Response({'mensaje': 'Cuenta ha sido eliminada exitosamente.'}, status=200)
 
 
- # pylint: disable=no-member          
+ #Lo nuevo para Mercado pago
+@csrf_exempt
+def crear_pagos_view(request):
+    if request.method == "POST":
+        try:
+            data = json.loads(request.body)
+            user = User.objects.get(id=data["user"])
+
+            total = 0
+            items = []
+            descripcion_items = []
+
+            # Verificar stock y armar detalles
+            for detalle_data in data["detalles"]:
+                producto = Producto.objects.get(id_producto=detalle_data["id_producto"])
+                cantidad = int(detalle_data["cantidad"])
+
+                if producto.stock < cantidad:
+                    return JsonResponse({
+                        "error": f"Stock insuficiente para {producto.nombre_producto}"
+                    }, status=400)
+
+            # Crear compra
+            compra = Compra.objects.create(
+                descripcion="",
+                user=user,
+                fecha=datetime.now(),
+                precio_total=0.0,
+                estado="pendiente"
+            )
+
+            # Crear detalles + descontar stock
+            for detalle_data in data["detalles"]:
+                producto = Producto.objects.get(id_producto=detalle_data["id_producto"])
+                cantidad = int(detalle_data["cantidad"])
+                precio_unitario = float(producto.precio)
+                precio_calculado = cantidad * precio_unitario
+                total += precio_calculado
+
+                Detalle.objects.create(
+                    cantidad=cantidad,
+                    precio_calculado=precio_calculado,
+                    producto=producto,
+                    compra=compra
+                )
+
+                producto.stock -= cantidad
+                producto.save()
+
+                descripcion_items.append(f"{cantidad} {producto.nombre_producto}")
+
+                items.append({
+                    "title": producto.nombre_producto,
+                    "quantity": cantidad,
+                    "unit_price": precio_unitario,
+                    "currency_id": "ARS",
+                })
+
+            compra.precio_total = total
+            compra.descripcion = ", ".join(descripcion_items)
+            compra.save()
+
+            # Crear preferencia Mercado Pago
+            preference_data = {
+                "items": items,
+                "back_urls": {
+                    "success": "https://ricco-web-frontend.onrender.com/pago-exitoso",
+                    "failure": "https://ricco-web-frontend.onrender.com/pago-fallido",
+                    "pending": "https://ricco-web-frontend.onrender.com/pago-pendiente",
+                },
+                "auto_return": "approved",
+                "notification_url": "https://ricco-backend.onrender.com/webhook/mercadopago/",
+                "metadata": {
+                    "compra_id": compra.id_compra
+                }
+            }
+
+            preference_response = sdk.preference().create(preference_data)
+            if preference_response["status"] != 201:
+                return JsonResponse({
+                    "error": "Error al generar preferencia",
+                    "detalle": preference_response["response"]
+                }, status=500)
+
+            return JsonResponse({
+                "init_point": preference_response["response"]["init_point"]
+            }, status=201)
+
+        except Exception as e:
+            return JsonResponse({"error": str(e)}, status=500)
+
+    return JsonResponse({"error": "Método no permitido"}, status=405)
+
+@csrf_exempt
+def mercadopago_webhook(request):
+    if request.method == "POST":
+        try:
+            data = json.loads(request.body)
+            print("Webhook recibido:", data)
+
+            payment_id = data.get("data", {}).get("id")
+            if not payment_id:
+                return JsonResponse({"error": "Falta payment_id"}, status=400)
+
+            # Consultar pago en Mercado Pago
+            payment_info = sdk.payment().get(payment_id)
+            status_pago = payment_info["response"]["status"]
+            compra_id = payment_info["response"]["metadata"].get("compra_id")
+
+            if compra_id:
+                compra = Compra.objects.get(id_compra=compra_id)
+                compra.estado = status_pago  # "approved", "rejected", "pending"
+                compra.save()
+
+            return JsonResponse({"message": "OK"}, status=200)
+
+        except Exception as e:
+            return JsonResponse({"error": str(e)}, status=500)
+
+    return JsonResponse({"error": "Método no permitido"}, status=405)         
