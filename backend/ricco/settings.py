@@ -25,6 +25,7 @@ CORS_ALLOW_ALL_ORIGINS = config('CORS_ALLOW_ALL_ORIGINS', default=True, cast=boo
 if not CORS_ALLOW_ALL_ORIGINS:
     CORS_ALLOWED_ORIGINS = [
         'https://burgerstack-dqyj.onrender.com',
+        'https://ricco-web-frontend.onrender.com',
     ]
 
 CORS_ALLOW_CREDENTIALS = True  # Para sesiones, cookies, etc.
