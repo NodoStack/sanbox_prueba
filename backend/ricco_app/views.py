@@ -472,7 +472,7 @@ def desactivar_cuenta(request):
     return Response({'mensaje': 'Cuenta ha sido eliminada exitosamente.'}, status=200)
 
 
- #Lo nuevo para Mercado pago
+# Lo nuevo para Mercado Pago
 @csrf_exempt
 def crear_pagos_view(request):
     if request.method == "POST":
@@ -557,7 +557,8 @@ def crear_pagos_view(request):
                 }, status=500)
 
             return JsonResponse({
-                "init_point": preference_response["response"]["init_point"]
+                "init_point": preference_response["response"]["init_point"],
+                "preference_id": preference_response["response"]["id"]
             }, status=201)
 
         except Exception as e:
@@ -565,14 +566,24 @@ def crear_pagos_view(request):
 
     return JsonResponse({"error": "Método no permitido"}, status=405)
 
+
 @csrf_exempt
 def mercadopago_webhook(request):
+    if request.method == "GET":
+        # Mercado Pago usa GET para verificar el endpoint
+        return JsonResponse({"message": "Webhook OK"}, status=200)
+
     if request.method == "POST":
         try:
             data = json.loads(request.body)
             print("Webhook recibido:", data)
 
-            payment_id = data.get("data", {}).get("id")
+            payment_id = None
+            if "data" in data and "id" in data["data"]:
+                payment_id = data["data"]["id"]
+            elif "id" in data:
+                payment_id = data["id"]
+
             if not payment_id:
                 return JsonResponse({"error": "Falta payment_id"}, status=400)
 
@@ -583,7 +594,14 @@ def mercadopago_webhook(request):
 
             if compra_id:
                 compra = Compra.objects.get(id_compra=compra_id)
-                compra.estado = status_pago  # "approved", "rejected", "pending"
+
+                # Mapear estados de Mercado Pago a tus estados internos
+                estados_validos = {
+                    "approved": "preparacion",
+                    "pending": "pendiente",
+                    "rejected": "cancelado",
+                }
+                compra.estado = estados_validos.get(status_pago, "pendiente")
                 compra.save()
 
             return JsonResponse({"message": "OK"}, status=200)
@@ -591,4 +609,4 @@ def mercadopago_webhook(request):
         except Exception as e:
             return JsonResponse({"error": str(e)}, status=500)
 
-    return JsonResponse({"error": "Método no permitido"}, status=405)         
+    return JsonResponse({"error": "Método no permitido"}, status=405)
