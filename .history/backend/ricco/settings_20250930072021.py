@@ -90,7 +90,7 @@ if DEBUG:
             'ENGINE': 'django.db.backends.mysql',
             'NAME': 'abm_ispc',
             'USER': 'root',
-            'PASSWORD': '123456',
+            'PASSWORD': '12345',
             'HOST': 'localhost',
             'PORT': '3306',
             'OPTIONS': {

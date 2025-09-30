@@ -209,14 +209,6 @@ class ProductoViewSet(viewsets.ModelViewSet):
 
     def get_serializer_context(self):
         return {'request': self.request}  
-    
-    def create(self, request, *args, **kwargs):
-      print("Datos recibidos EN EL BACKEND:", request.data)
-      serializer = self.get_serializer(data=request.data)
-      if not serializer.is_valid():
-        print("Errores de validación:", serializer.errors)
-      return super().create(request, *args, **kwargs)
-
  
 class DireccionViewSet(viewsets.ModelViewSet):
     queryset=Direccion.objects.all() # pylint: disable=no-member   
@@ -482,7 +474,7 @@ def desactivar_cuenta(request):
     return Response({'mensaje': 'Cuenta ha sido eliminada exitosamente.'}, status=200)
 
 
-# Lo nuevo para Mercado Pago
+ #Lo nuevo para Mercado pago
 @csrf_exempt
 def crear_pagos_view(request):
     if request.method == "POST":
@@ -567,8 +559,7 @@ def crear_pagos_view(request):
                 }, status=500)
 
             return JsonResponse({
-                "init_point": preference_response["response"]["init_point"],
-                "preference_id": preference_response["response"]["id"]
+                "init_point": preference_response["response"]["init_point"]
             }, status=201)
 
         except Exception as e:
@@ -576,24 +567,14 @@ def crear_pagos_view(request):
 
     return JsonResponse({"error": "Método no permitido"}, status=405)
 
-
 @csrf_exempt
 def mercadopago_webhook(request):
-    if request.method == "GET":
-        # Mercado Pago usa GET para verificar el endpoint
-        return JsonResponse({"message": "Webhook OK"}, status=200)
-
     if request.method == "POST":
         try:
             data = json.loads(request.body)
             print("Webhook recibido:", data)
 
-            payment_id = None
-            if "data" in data and "id" in data["data"]:
-                payment_id = data["data"]["id"]
-            elif "id" in data:
-                payment_id = data["id"]
-
+            payment_id = data.get("data", {}).get("id")
             if not payment_id:
                 return JsonResponse({"error": "Falta payment_id"}, status=400)
 
@@ -604,14 +585,7 @@ def mercadopago_webhook(request):
 
             if compra_id:
                 compra = Compra.objects.get(id_compra=compra_id)
-
-                # Mapear estados de Mercado Pago a tus estados internos
-                estados_validos = {
-                    "approved": "preparacion",
-                    "pending": "pendiente",
-                    "rejected": "cancelado",
-                }
-                compra.estado = estados_validos.get(status_pago, "pendiente")
+                compra.estado = status_pago  # "approved", "rejected", "pending"
                 compra.save()
 
             return JsonResponse({"message": "OK"}, status=200)
@@ -619,4 +593,4 @@ def mercadopago_webhook(request):
         except Exception as e:
             return JsonResponse({"error": str(e)}, status=500)
 
-    return JsonResponse({"error": "Método no permitido"}, status=405)
+    return JsonResponse({"error": "Método no permitido"}, status=405)         
