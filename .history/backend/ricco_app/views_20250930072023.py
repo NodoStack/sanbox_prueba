@@ -23,7 +23,6 @@ from django.utils import timezone
 from ricco_app.permissions import EsAdministradorPorRol
 import logging
 from rest_framework.decorators import api_view, permission_classes
-from rest_framework.parsers import MultiPartParser, FormParser
 
 sdk = mercadopago.SDK(settings.MERCADOPAGO_ACCESS_TOKEN)
 
@@ -195,7 +194,6 @@ class ProductoViewSet(viewsets.ModelViewSet):
     serializer_class = ProductoSerializer
     permission_classes = [AllowAny]
     lookup_field = 'id_producto'  
-    parser_classes = [MultiPartParser, FormParser]
 
     def get_queryset(self):
         user = self.request.user
@@ -209,14 +207,6 @@ class ProductoViewSet(viewsets.ModelViewSet):
 
     def get_serializer_context(self):
         return {'request': self.request}  
-    
-    def create(self, request, *args, **kwargs):
-      print("Datos recibidos EN EL BACKEND:", request.data)
-      serializer = self.get_serializer(data=request.data)
-      if not serializer.is_valid():
-        print("Errores de validación:", serializer.errors)
-      return super().create(request, *args, **kwargs)
-
  
 class DireccionViewSet(viewsets.ModelViewSet):
     queryset=Direccion.objects.all() # pylint: disable=no-member   

@@ -92,7 +92,7 @@ class RolSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 class ProductoSerializer(serializers.ModelSerializer):
-    main_imagen = serializers.URLField(required=False)
+    main_imagen = serializers.ImageField(use_url=True, required=False)
 
     class Meta:
         model = Producto
