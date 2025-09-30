@@ -1,7 +1,6 @@
 # Python
 __pycache__/
 *.py[cod]
-*.pyc
 
 # Django
 *.log
@@ -21,6 +20,3 @@ venv/
 
 # VSCode
 .vscode/
-
-#historial
-.history/
