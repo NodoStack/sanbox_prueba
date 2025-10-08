@@ -24,6 +24,9 @@ from ricco_app.permissions import EsAdministradorPorRol
 import logging
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.parsers import MultiPartParser, FormParser
+from django.views.decorators.csrf import csrf_exempt
+from django.utils.decorators import method_decorator
+from rest_framework.views import APIView
 
 sdk = mercadopago.SDK(settings.MERCADOPAGO_ACCESS_TOKEN)
 
@@ -236,12 +239,12 @@ class CompraViewSet(viewsets.ModelViewSet):
             print(f'Compra ID: {compra.id}, Usuario: {compra.user.first_name} {compra.user.last_name}')
         return compras
 
-
+@method_decorator(csrf_exempt, name='dispatch')
 class CambiarEstadoCompraAPIView(APIView):
     permission_classes = [EsAdministradorPorRol]  
 
     def patch(self, request, pk):
-        
+        print("ROL:", getattr(request.user.rol, 'nombre_rol', 'Sin rol'))
         try:
             compra = Compra.objects.get(pk=pk) # pylint: disable=no-member   
         except Compra.DoesNotExist: # pylint: disable=no-member   
@@ -480,8 +483,7 @@ def desactivar_cuenta(request):
     user.save()
 
     return Response({'mensaje': 'Cuenta ha sido eliminada exitosamente.'}, status=200)
-
-
+#______________________________________
 # Lo nuevo para Mercado Pago
 @csrf_exempt
 def crear_pagos_view(request):
