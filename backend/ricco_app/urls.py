@@ -2,7 +2,7 @@ from django.urls import path, include
 from rest_framework import routers
 from .views import LoginView, LogoutView, RegistroView
 from ricco_app import views
-from .views import MisComprasView, TodasComprasView, AdminView, PerfilUsuarioView, crear_pagos_view, CancelarPedidoView, mercadopago_webhook
+from .views import MisComprasView, TodasComprasView, AdminView, PerfilUsuarioView, crear_pagos_view, CancelarPedidoView
 from ricco_app.views import CambiarEstadoCompraAPIView 
 
 
@@ -32,6 +32,6 @@ urlpatterns = [
     path('actualizar-compras/', views.ActualizarComprasView.as_view(), name='actualizar_compras'),
     path("crear-pagos/", crear_pagos_view, name="crear_pagos"),
     path('compra/<int:pk>/cambiar-estado/', CambiarEstadoCompraAPIView.as_view(), name='cambiar_estado'),
-    path("webhook/mercadopago/", mercadopago_webhook, name="mercadopago_webhook"), #se agregó esto para mercado pago
+#     path("webhook/mercadopago/", mercadopago_webhook, name="mercadopago_webhook"), #se agregó esto para mercado pago
     path('', include(router.urls)),
 ]
