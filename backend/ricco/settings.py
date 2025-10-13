@@ -13,27 +13,27 @@ DEBUG = config('DEBUG', default=True, cast=bool)
 # === SECRET_KEY: clave secreta del proyecto Django ===
 SECRET_KEY = config('SECRET_KEY', default='insecure-dev-key')
 
+# === CORS: Controla qué frontends pueden comunicarse con el backend ===
+CORS_ALLOW_ALL_ORIGINS = config('CORS_ALLOW_ALL_ORIGINS', default=False, cast=bool)
+CORS_ALLOWED_ORIGINS = [
+    'https://burgerstack-dqyj.onrender.com',
+    'https://ricco-web-frontend.onrender.com',
+]
+
+
 # === ALLOWED_HOSTS: dominios permitidos para acceder al backend ===
 if DEBUG:
     ALLOWED_HOSTS = ['127.0.0.1', 'localhost']
     CSRF_TRUSTED_ORIGINS = ['http://localhost:4200'] #Origen Para peticiones desde Angular local
-    CORS_ALLOWED_ORIGINS = ['http://localhost:4200'] #i en algún momento SE desactiva CORS_ALLOW_ALL_ORIGINS, estos son los permitidos
+    CORS_ALLOWED_ORIGINS += ['http://localhost:4200'] #i en algún momento SE desactiva CORS_ALLOW_ALL_ORIGINS, estos son los permitidos
 else:
     ALLOWED_HOSTS = ['ricco-backend.onrender.com']  # Dominio de producción
-    CSRF_TRUSTED_ORIGINS = ['https://ricco-web-frontend.onrender.com'] 
-    CORS_ALLOWED_ORIGINS = [
+    CSRF_TRUSTED_ORIGINS = [
         'https://burgerstack-dqyj.onrender.com',
         'https://ricco-web-frontend.onrender.com',
     ]
 
-# === CORS: Controla qué frontends pueden comunicarse con el backend ===
-CORS_ALLOW_ALL_ORIGINS = config('CORS_ALLOW_ALL_ORIGINS', default=True, cast=bool)
 
-if not CORS_ALLOW_ALL_ORIGINS:
-    CORS_ALLOWED_ORIGINS = [
-        'https://burgerstack-dqyj.onrender.com',
-        'https://ricco-web-frontend.onrender.com',
-    ]
 
 CORS_ALLOW_CREDENTIALS = True  # Para sesiones, cookies, etc.
 
