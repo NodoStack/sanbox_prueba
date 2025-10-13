@@ -8,7 +8,7 @@ from decouple import config  # ✅ Lee las variables del archivo .env
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # === DEBUG: True para desarrollo, False para producción ===
-DEBUG = config('DEBUG', default=True, cast=bool)
+DEBUG = config('DEBUG', default=False, cast=bool)
 
 # === SECRET_KEY: clave secreta del proyecto Django ===
 SECRET_KEY = config('SECRET_KEY', default='insecure-dev-key')
@@ -202,6 +202,8 @@ cloudinary.config(
   api_secret = config('CLOUDINARY_API_SECRET') 
 )
 
+SESSION_COOKIE_SECURE = True
+CSRF_COOKIE_SECURE = True
 
 # from pathlib import Path
 # from datetime import timedelta
