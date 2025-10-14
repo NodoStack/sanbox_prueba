@@ -3,40 +3,57 @@ import dj_database_url
 from pathlib import Path
 from datetime import timedelta
 from decouple import config  # ✅ Lee las variables del archivo .env
+import cloudinary
+from corsheaders.defaults import default_headers
+
 
 # === BASE_DIR: ruta base del proyecto ===
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # === DEBUG: True para desarrollo, False para producción ===
-DEBUG = config('DEBUG', default=True, cast=bool)
+DEBUG = config('DEBUG', default=False, cast=bool)
 
 # === SECRET_KEY: clave secreta del proyecto Django ===
 SECRET_KEY = config('SECRET_KEY', default='insecure-dev-key')
 
+# === CORS: Controla qué frontends pueden comunicarse con el backend ===
+CORS_ALLOW_ALL_ORIGINS = config('CORS_ALLOW_ALL_ORIGINS', default=False, cast=bool)
+CORS_ALLOWED_ORIGINS = [
+    'https://burgerstack-dqyj.onrender.com',
+    'https://ricco-web-frontend.onrender.com',
+]
+
+
 # === ALLOWED_HOSTS: dominios permitidos para acceder al backend ===
+# if DEBUG:
+#     ALLOWED_HOSTS = ['127.0.0.1', 'localhost']
+#     CSRF_TRUSTED_ORIGINS = ['http://localhost:4200'] #Origen Para peticiones desde Angular local
+#     CORS_ALLOWED_ORIGINS += ['http://localhost:4200'] #i en algún momento SE desactiva CORS_ALLOW_ALL_ORIGINS, estos son los permitidos
+# else:
+#     ALLOWED_HOSTS = ['ricco-backend.onrender.com']  # Dominio de producción
+#     CSRF_TRUSTED_ORIGINS = [
+#         'https://burgerstack-dqyj.onrender.com',
+#         'https://ricco-web-frontend.onrender.com',
+#     ]
+
+
+
+# CORS_ALLOW_CREDENTIALS = True  # Para sesiones, cookies, etc.
+
 if DEBUG:
     ALLOWED_HOSTS = ['127.0.0.1', 'localhost']
-    CSRF_TRUSTED_ORIGINS = ['http://localhost:4200'] #Origen Para peticiones desde Angular local
-    CORS_ALLOWED_ORIGINS = ['http://localhost:4200'] #i en algún momento SE desactiva CORS_ALLOW_ALL_ORIGINS, estos son los permitidos
+    CSRF_TRUSTED_ORIGINS = ['http://localhost:4200']
+    CORS_ALLOWED_ORIGINS = ['http://localhost:4200']
+    CORS_ALLOW_ALL_ORIGINS = True  # Solo en desarrollo
+    CORS_ALLOW_CREDENTIALS = False  # No necesario en local si usás tokens
 else:
-    ALLOWED_HOSTS = ['ricco-backend.onrender.com']  # Dominio de producción
-    CSRF_TRUSTED_ORIGINS = ['https://ricco-web-frontend.onrender.com'] 
-    CORS_ALLOWED_ORIGINS = [
-        'https://burgerstack-dqyj.onrender.com',
-        'https://ricco-web-frontend.onrender.com',
-    ]
-
-# === CORS: Controla qué frontends pueden comunicarse con el backend ===
-CORS_ALLOW_ALL_ORIGINS = config('CORS_ALLOW_ALL_ORIGINS', default=True, cast=bool)
-
-if not CORS_ALLOW_ALL_ORIGINS:
-    CORS_ALLOWED_ORIGINS = [
-        'https://burgerstack-dqyj.onrender.com',
-        'https://ricco-web-frontend.onrender.com',
-    ]
-
-CORS_ALLOW_CREDENTIALS = True  # Para sesiones, cookies, etc.
-
+    ALLOWED_HOSTS = ['ricco-backend.onrender.com']
+    CSRF_TRUSTED_ORIGINS = ['https://ricco-web-frontend.onrender.com']
+    CORS_ALLOWED_ORIGINS = ['https://ricco-web-frontend.onrender.com']
+    CORS_ALLOW_ALL_ORIGINS = False  # 🚫 Obligatorio para credenciales
+    CORS_ALLOW_CREDENTIALS = True   # ✅ Necesario para cookies/sesiones
+    
+    
 # === Apps instaladas ===
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -58,9 +75,9 @@ INSTALLED_APPS = [
 
 # === Middlewares (procesadores que se ejecutan en cada petición HTTP) ===
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',  # Habilita CORS
     'django.middleware.security.SecurityMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',  # Sirve archivos estáticos
-    'corsheaders.middleware.CorsMiddleware',  # Habilita CORS
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -163,13 +180,20 @@ SIMPLE_JWT = {
 }
 
 # === Headers permitidos por CORS ===
-CORS_ALLOW_HEADERS = [
-    'content-type',
+# CORS_ALLOW_HEADERS = [
+#     'content-type',
+#     'authorization',
+#     'autentification',
+#     'x-requested-with',
+#     'x-csrftoken',
+# ]
+
+CORS_ALLOW_HEADERS = list(default_headers) + [
     'authorization',
-    'autentification',
-    'x-requested-with',
     'x-csrftoken',
 ]
+
+CORS_ORIGIN_WHITELIST = CORS_ALLOWED_ORIGINS
 
 # === Métodos HTTP permitidos por CORS ===
 CORS_ALLOW_METHODS = [
@@ -193,8 +217,6 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 AUTHENTICATION_BACKENDS = ['ricco_app.backends.EmailBackend']
 
 #===== CONFIGURACION CLOUDINARY====
-import cloudinary
-from decouple import config
 
 cloudinary.config( 
   cloud_name = config('CLOUDINARY_CLOUD_NAME'), 
@@ -202,6 +224,8 @@ cloudinary.config(
   api_secret = config('CLOUDINARY_API_SECRET') 
 )
 
+SESSION_COOKIE_SECURE = True
+CSRF_COOKIE_SECURE = True
 
 # from pathlib import Path
 # from datetime import timedelta
