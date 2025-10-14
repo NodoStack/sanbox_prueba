@@ -138,6 +138,21 @@ def crear_pagos_view(request):
 
     except Exception as e:        
         return JsonResponse({"error": str(e)}, status=500)
+#------------solo para testeo--------------------------------
+
+@api_view(['GET'])
+def test_usuario(request):
+    User = get_user_model()
+    try:
+        user = User.objects.get(email='admin@gmail.com')
+        return Response({
+            'email': user.email,
+            'is_staff': user.is_staff,
+            'has_password': user.has_usable_password()
+        })
+    except User.DoesNotExist:
+        return Response({'error': 'Usuario no existe'})
+#------------fin--------------------------------------------
 
 class CancelarPedidoView(APIView):
     permission_classes = [IsAuthenticated]
