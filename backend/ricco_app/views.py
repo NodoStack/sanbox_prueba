@@ -25,9 +25,6 @@ import logging
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.parsers import MultiPartParser, FormParser
 
-
-
-
 sdk = mercadopago.SDK(settings.MERCADOPAGO_ACCESS_TOKEN)
 
 User = get_user_model()
@@ -73,12 +70,12 @@ def crear_pagos_view(request):
         items = []
 
         for detalle_data in data["detalles"]:
-            producto = Producto.objects.get(id_producto=detalle_data["id_producto"])
+            producto = Producto.objects.get(id_producto=detalle_data["id_producto"])  # pylint: disable=no-member
             cantidad = int(detalle_data["cantidad"])
             if producto.stock < cantidad:
                 return JsonResponse({"error": f"Stock insuficiente para {producto.nombre_producto}"}, status=400)
 
-        compra = Compra.objects.create(
+        compra = Compra.objects.create(  # pylint: disable=no-member
             descripcion="",
             user=user,
             fecha=datetime.now(),
@@ -87,13 +84,13 @@ def crear_pagos_view(request):
         )
 
         for detalle_data in data["detalles"]:
-            producto = Producto.objects.get(id_producto=detalle_data["id_producto"])
+            producto = Producto.objects.get(id_producto=detalle_data["id_producto"])  # pylint: disable=no-member
             cantidad = int(detalle_data["cantidad"])
             precio_unitario = float(producto.precio)
             precio_calculado = cantidad * precio_unitario
             total += precio_calculado
 
-            Detalle.objects.create(
+            Detalle.objects.create(  # pylint: disable=no-member
                 cantidad=cantidad,
                 precio_calculado=precio_calculado,
                 producto=producto,
@@ -111,7 +108,9 @@ def crear_pagos_view(request):
             })
 
         compra.precio_total = total
-        compra.descripcion = ", ".join([f"{d['cantidad']} {Producto.objects.get(id_producto=d['id_producto']).nombre_producto}" for d in data["detalles"]])
+        compra.descripcion = ", ".join([
+            f"{d['cantidad']} {Producto.objects.get(id_producto=d['id_producto']).nombre_producto}"  # pylint: disable=no-member
+            for d in data["detalles"]])  
         compra.save()
 
         # 🔁 Redirección directa a Google según estado
