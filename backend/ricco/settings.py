@@ -75,9 +75,9 @@ INSTALLED_APPS = [
 
 # === Middlewares (procesadores que se ejecutan en cada petición HTTP) ===
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',  # Habilita CORS
     'django.middleware.security.SecurityMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',  # Sirve archivos estáticos
-    'corsheaders.middleware.CorsMiddleware',  # Habilita CORS
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
