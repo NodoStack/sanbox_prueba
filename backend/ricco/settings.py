@@ -4,6 +4,8 @@ from pathlib import Path
 from datetime import timedelta
 from decouple import config  # ✅ Lee las variables del archivo .env
 import cloudinary
+from corsheaders.defaults import default_headers
+
 
 # === BASE_DIR: ruta base del proyecto ===
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -178,13 +180,20 @@ SIMPLE_JWT = {
 }
 
 # === Headers permitidos por CORS ===
-CORS_ALLOW_HEADERS = [
-    'content-type',
+# CORS_ALLOW_HEADERS = [
+#     'content-type',
+#     'authorization',
+#     'autentification',
+#     'x-requested-with',
+#     'x-csrftoken',
+# ]
+
+CORS_ALLOW_HEADERS = list(default_headers) + [
     'authorization',
-    'autentification',
-    'x-requested-with',
     'x-csrftoken',
 ]
+
+CORS_ORIGIN_WHITELIST = CORS_ALLOWED_ORIGINS
 
 # === Métodos HTTP permitidos por CORS ===
 CORS_ALLOW_METHODS = [
