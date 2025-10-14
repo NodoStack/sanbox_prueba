@@ -3,6 +3,7 @@ import dj_database_url
 from pathlib import Path
 from datetime import timedelta
 from decouple import config  # ✅ Lee las variables del archivo .env
+import cloudinary
 
 # === BASE_DIR: ruta base del proyecto ===
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -22,21 +23,35 @@ CORS_ALLOWED_ORIGINS = [
 
 
 # === ALLOWED_HOSTS: dominios permitidos para acceder al backend ===
+# if DEBUG:
+#     ALLOWED_HOSTS = ['127.0.0.1', 'localhost']
+#     CSRF_TRUSTED_ORIGINS = ['http://localhost:4200'] #Origen Para peticiones desde Angular local
+#     CORS_ALLOWED_ORIGINS += ['http://localhost:4200'] #i en algún momento SE desactiva CORS_ALLOW_ALL_ORIGINS, estos son los permitidos
+# else:
+#     ALLOWED_HOSTS = ['ricco-backend.onrender.com']  # Dominio de producción
+#     CSRF_TRUSTED_ORIGINS = [
+#         'https://burgerstack-dqyj.onrender.com',
+#         'https://ricco-web-frontend.onrender.com',
+#     ]
+
+
+
+# CORS_ALLOW_CREDENTIALS = True  # Para sesiones, cookies, etc.
+
 if DEBUG:
     ALLOWED_HOSTS = ['127.0.0.1', 'localhost']
-    CSRF_TRUSTED_ORIGINS = ['http://localhost:4200'] #Origen Para peticiones desde Angular local
-    CORS_ALLOWED_ORIGINS += ['http://localhost:4200'] #i en algún momento SE desactiva CORS_ALLOW_ALL_ORIGINS, estos son los permitidos
+    CSRF_TRUSTED_ORIGINS = ['http://localhost:4200']
+    CORS_ALLOWED_ORIGINS = ['http://localhost:4200']
+    CORS_ALLOW_ALL_ORIGINS = True  # Solo en desarrollo
+    CORS_ALLOW_CREDENTIALS = False  # No necesario en local si usás tokens
 else:
-    ALLOWED_HOSTS = ['ricco-backend.onrender.com']  # Dominio de producción
-    CSRF_TRUSTED_ORIGINS = [
-        'https://burgerstack-dqyj.onrender.com',
-        'https://ricco-web-frontend.onrender.com',
-    ]
-
-
-
-CORS_ALLOW_CREDENTIALS = True  # Para sesiones, cookies, etc.
-
+    ALLOWED_HOSTS = ['ricco-backend.onrender.com']
+    CSRF_TRUSTED_ORIGINS = ['https://ricco-web-frontend.onrender.com']
+    CORS_ALLOWED_ORIGINS = ['https://ricco-web-frontend.onrender.com']
+    CORS_ALLOW_ALL_ORIGINS = False  # 🚫 Obligatorio para credenciales
+    CORS_ALLOW_CREDENTIALS = True   # ✅ Necesario para cookies/sesiones
+    
+    
 # === Apps instaladas ===
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -193,8 +208,6 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 AUTHENTICATION_BACKENDS = ['ricco_app.backends.EmailBackend']
 
 #===== CONFIGURACION CLOUDINARY====
-import cloudinary
-from decouple import config
 
 cloudinary.config( 
   cloud_name = config('CLOUDINARY_CLOUD_NAME'), 
