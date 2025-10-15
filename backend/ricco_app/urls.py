@@ -32,7 +32,7 @@ urlpatterns = [
     path('actualizar-compras/', views.ActualizarComprasView.as_view(), name='actualizar_compras'),
     path("crear-pagos/", crear_pagos_view, name="crear_pagos"),
     path('compra/<int:pk>/cambiar-estado/', CambiarEstadoCompraAPIView.as_view(), name='cambiar_estado'),
-    path('api/test-usuario/', test_usuario),
+    path('api/test-usuario/', test_usuario, name= 'test_usuario'),
 
 #     path("webhook/mercadopago/", mercadopago_webhook, name="mercadopago_webhook"), #se agregó esto para mercado pago
     path('', include(router.urls)),
