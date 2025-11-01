@@ -3,6 +3,7 @@ import dj_database_url
 from pathlib import Path
 from datetime import timedelta
 from decouple import config  # ✅ Lee las variables del archivo .env
+import cloudinary
 
 # === BASE_DIR: ruta base del proyecto ===
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -110,7 +111,8 @@ else:
     DATABASES = {
         'default': dj_database_url.config(
             default=config('DATABASE_URL', default=''),  # ✅ Coma corregida
-            conn_max_age=600
+            conn_max_age=600,
+            ssl_require=True  # 👈 Esto es CLAVE para Render PostgreSQL
         )
     }
 
@@ -194,8 +196,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 AUTHENTICATION_BACKENDS = ['ricco_app.backends.EmailBackend']
 
 #===== CONFIGURACION CLOUDINARY====
-import cloudinary
-from decouple import config
+
 
 cloudinary.config( 
   cloud_name = config('CLOUDINARY_CLOUD_NAME'), 
