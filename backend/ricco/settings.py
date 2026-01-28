@@ -19,8 +19,8 @@ if DEBUG:
     CSRF_TRUSTED_ORIGINS = ['http://localhost:4200'] #Origen Para peticiones desde Angular local
     CORS_ALLOWED_ORIGINS = ['http://localhost:4200'] #i en algún momento SE desactiva CORS_ALLOW_ALL_ORIGINS, estos son los permitidos
 else:
-    ALLOWED_HOSTS = ['ricco-backend.onrender.com']  # Dominio de producción
-    CSRF_TRUSTED_ORIGINS = ['https://ricco-web-frontend.onrender.com'] 
+    ALLOWED_HOSTS = ['ricco-backend.onrender.com', 'sanbox-prueba.onrender.com']  # Dominio de producción
+    CSRF_TRUSTED_ORIGINS = ['https://ricco-web-frontend.onrender.com', 'https://burgerstack-dqyj.onrender.com'] 
     CORS_ALLOWED_ORIGINS = [
         'https://burgerstack-dqyj.onrender.com',
         'https://ricco-web-frontend.onrender.com',
