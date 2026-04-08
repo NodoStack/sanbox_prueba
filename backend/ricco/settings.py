@@ -92,30 +92,24 @@ TEMPLATES = [
 
 # === Base de datos ===
 if os.environ.get('RENDER'):
-    DATABASES = {
-        'default': dj_database_url.config(
-            default=os.environ.get('DATABASE_URL'),
-            conn_max_age=600
-        )
-    }
+     DATABASES = {
+         'default': dj_database_url.config(
+             default=os.environ.get('DATABASE_URL'),
+             conn_max_age=600
+         )
+     }
 else:
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.mysql',
-            'NAME': config('DB_NAME', default='abm_ispc'),
-            'USER': config('DB_USER', default='root'),
-            'PASSWORD': config('DB_PASSWORD', default=''),
-            'HOST': config('DB_HOST', default='localhost'),
-            'PORT': config('DB_PORT', default='3306'),
-        }
-    }
-# === Validación de contraseñas ===
-AUTH_PASSWORD_VALIDATORS = [
-    {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},
-    {'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator', 'OPTIONS': {'min_length': 8}},
-    {'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator'},
-    {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator'},
-]
+     DATABASES = {
+         'default': {
+             'ENGINE': 'django.db.backends.mysql',
+             'NAME': config('DB_NAME', default='abm_ispc'),
+             'USER': config('DB_USER', default='root'),
+             'PASSWORD': config('DB_PASSWORD', default=''),
+             'HOST': config('DB_HOST', default='localhost'),
+             'PORT': config('DB_PORT', default='3306'),
+         }
+     }
+
 
 # === Internacionalización ===
 LANGUAGE_CODE = 'en-us'
